@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wanderlust — Travel Bucket List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brand-black':    '#06070A',
+            'brand-gold':     '#C9A84C',
+            'brand-gold-lt':  '#E8C97A',
+            'brand-offwhite': '#F0EBE0',
+            'brand-grey':     '#8A8EA8',
+            'brand-surface':  '#0E0F14',
+            'brand-surface2': '#151720',
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --black:      #06070A;
+      --gold:       #C9A84C;
+      --gold-lt:    #E8C97A;
+      --offwhite:   #F0EBE0;
+      --grey:       #8A8EA8;
+      --surface:    #0E0F14;
+      --surface2:   #151720;
+      --serif:      'Playfair Display', Georgia, serif;
+      --sans:       'Inter', system-ui, sans-serif;
+      --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-std:   cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--offwhite);
+      font-family: var(--sans);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      html { scroll-behavior: auto; }
+    }
+
+    /* ── NAVBAR ── */
+    #navbar {
+      transition: background 400ms var(--ease-std),
+                  backdrop-filter 400ms var(--ease-std),
+                  box-shadow 400ms var(--ease-std);
+    }
+    #navbar.scrolled {
+      background: rgba(6, 7, 10, 0.94);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 1px 0 rgba(201, 168, 76, 0.18);
+    }
+    .nav-link {
+      position: relative;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(240, 235, 224, 0.6);
+      transition: color 300ms;
+      text-decoration: none;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 300ms var(--ease-std);
+    }
+    .nav-link:hover { color: var(--gold); }
+    .nav-link:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    #hero { position: relative; height: 100vh; min-height: 700px; overflow: hidden; }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000&q=85&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center 30%;
+      animation: heroScale 18s ease-out forwards;
+      will-change: transform;
+    }
+    @keyframes heroScale {
+      0%   { transform: scale(1.08); }
+      100% { transform: scale(1.00); }
+    }
+
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(6,7,10,0.25) 0%,
+        rgba(6,7,10,0.18) 30%,
+        rgba(6,7,10,0.52) 65%,
+        rgba(6,7,10,0.96) 100%
+      );
+    }
+    /* subtle vignette sides */
+    .hero-vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(6,7,10,0.6) 100%);
+    }
+
+    .hero-content {
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; text-align: center;
+      padding: 0 1.5rem;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.65rem;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 0.9s var(--ease-out) forwards 0.5s;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(4.5rem, 13vw, 10rem);
+      font-weight: 400;
+      line-height: 0.88;
+      color: var(--offwhite);
+      letter-spacing: -0.025em;
+      margin: 0.75rem 0 0;
+      overflow: hidden;
+    }
+    .hero-title-line {
+      display: block;
+      opacity: 0;
+      transform: translateY(110%);
+      animation: slideUp 1s var(--ease-out) forwards;
+    }
+    .hero-title-line:nth-child(1) { animation-delay: 0.75s; }
+    .hero-title-line:nth-child(2) {
+      animation-delay: 0.9s;
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero-divider {
+      width: 48px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 1.5rem auto 0;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 1.3s;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(0.85rem, 1.8vw, 1rem);
+      font-weight: 300;
+      color: rgba(240, 235, 224, 0.58);
+      letter-spacing: 0.06em;
+      max-width: 440px;
+      line-height: 1.9;
+      margin-top: 1.25rem;
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 0.9s var(--ease-out) forwards 1.3s;
+    }
+
+    .hero-ctas {
+      display: flex; gap: 1rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap; justify-content: center;
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 0.9s var(--ease-out) forwards 1.6s;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* floating particles in hero */
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: 0;
+      animation: particleFloat linear infinite;
+      will-change: transform, opacity;
+    }
+    @keyframes particleFloat {
+      0%   { opacity: 0; transform: translateY(0) translateX(0); }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-120px) translateX(var(--drift, 20px)); }
+    }
+
+    /* ── SCROLL INDICATOR ── */
+    .scroll-indicator {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease-out) forwards 2.1s;
+      cursor: pointer; z-index: 10;
+    }
+    .scroll-indicator span {
+      font-size: 0.58rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(240, 235, 224, 0.35);
+    }
+    .scroll-line {
+      width: 1px; height: 52px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.35; transform: scaleY(1); transform-origin: top; }
+      50%       { opacity: 1;    transform: scaleY(1.1); }
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.875rem 2.25rem;
+      background: var(--gold); color: var(--black);
+      font-family: var(--sans); font-size: 0.72rem;
+      font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+      border: 1px solid var(--gold);
+      cursor: pointer; text-decoration: none;
+      transition: background 300ms, color 300ms, transform 300ms, box-shadow 300ms;
+    }
+    .btn-primary:hover {
+      background: transparent; color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(201, 168, 76, 0.28);
+    }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.875rem 2.25rem;
+      background: transparent; color: var(--offwhite);
+      font-family: var(--sans); font-size: 0.72rem;
+      font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+      border: 1px solid rgba(240, 235, 224, 0.28);
+      cursor: pointer; text-decoration: none;
+      transition: border-color 300ms, color 300ms, transform 300ms;
+    }
+    .btn-ghost:hover {
+      border-color: var(--gold); color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      background: var(--surface);
+      border-top: 1px solid rgba(201, 168, 76, 0.12);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+    }
+    .stat-item {
+      text-align: center; padding: 3rem 1.5rem;
+      border-right: 1px solid rgba(201, 168, 76, 0.08);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 3.75rem);
+      font-weight: 400; color: var(--gold); line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.6rem; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--grey);
+      margin-top: 0.6rem;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-eyebrow {
+      font-size: 0.62rem; letter-spacing: 0.38em;
+      text-transform: uppercase; color: var(--gold);
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 400; line-height: 1.15; color: var(--offwhite);
+    }
+    .gold-rule {
+      width: 48px; height: 1px;
+      background: var(--gold);
+      margin: 1.25rem auto 0;
+    }
+
+    /* ── DESTINATION CARDS ── */
+    .dest-card {
+      position: relative; overflow: hidden;
+      cursor: pointer; background: var(--surface);
+      aspect-ratio: 3/4;
+    }
+    .dest-img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 700ms var(--ease-std);
+    }
+    .dest-card:hover .dest-img { transform: scale(1.08); }
+
+    .dest-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(6,7,10,0.95) 0%,
+        rgba(6,7,10,0.28) 55%,
+        transparent 100%
+      );
+      transition: background 600ms var(--ease-std);
+    }
+    .dest-card:hover .dest-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(6,7,10,0.98) 0%,
+        rgba(6,7,10,0.65) 60%,
+        rgba(6,7,10,0.15) 100%
+      );
+    }
+
+    .dest-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 1.75rem 1.5rem;
+    }
+    .dest-tag {
+      display: inline-block;
+      font-size: 0.58rem; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--gold);
+      border: 1px solid rgba(201, 168, 76, 0.38);
+      padding: 0.22rem 0.6rem; margin-bottom: 0.65rem;
+    }
+    .dest-name {
+      font-family: var(--serif);
+      font-size: 1.55rem; font-weight: 400;
+      color: var(--offwhite); line-height: 1.2;
+    }
+    .dest-desc {
+      font-size: 0.78rem; color: rgba(240,235,224,0.55);
+      line-height: 1.65; margin-top: 0.55rem;
+      max-height: 0; overflow: hidden;
+      transition: max-height 450ms var(--ease-std), opacity 400ms ease;
+      opacity: 0;
+    }
+    .dest-card:hover .dest-desc { max-height: 90px; opacity: 1; }
+
+    .dest-gold-bar {
+      position: absolute; bottom: 0; left: 0;
+      width: 0; height: 2px; background: var(--gold);
+      transition: width 500ms var(--ease-out);
+    }
+    .dest-card:hover .dest-gold-bar { width: 100%; }
+
+    /* ── QUOTE SECTION ── */
+    .quote-section {
+      position: relative; overflow: hidden;
+    }
+    .quote-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2000&q=80&auto=format&fit=crop');
+      background-size: cover; background-position: center;
+      background-attachment: fixed;
+    }
+    .quote-overlay {
+      position: absolute; inset: 0;
+      background: rgba(6, 7, 10, 0.82);
+    }
+    blockquote {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+      font-weight: 400; font-style: italic;
+      line-height: 1.45; color: var(--offwhite);
+    }
+    .quote-mark {
+      font-family: var(--serif); font-size: 9rem;
+      line-height: 0.4; color: var(--gold); opacity: 0.35;
+      display: block; margin-bottom: 1.5rem;
+    }
+
+    /* ── WISH LIST ── */
+    .wish-item {
+      display: flex; align-items: flex-start; gap: 1.75rem;
+      padding: 1.9rem 0;
+      border-bottom: 1px solid rgba(240, 235, 224, 0.055);
+      cursor: pointer;
+      transition: padding-left 300ms var(--ease-std);
+    }
+    .wish-item:hover { padding-left: 0.6rem; }
+    .wish-item:first-child { border-top: 1px solid rgba(240, 235, 224, 0.055); }
+
+    .wish-num {
+      font-family: var(--serif); font-size: 3.2rem;
+      font-weight: 400; color: rgba(201, 168, 76, 0.22);
+      line-height: 1; min-width: 3.5rem;
+      transition: color 300ms;
+    }
+    .wish-item:hover .wish-num { color: rgba(201, 168, 76, 0.55); }
+
+    .wish-body { flex: 1; }
+    .wish-status {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-size: 0.58rem; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--grey);
+      margin-bottom: 0.45rem;
+    }
+    .wish-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(138, 142, 168, 0.5);
+    }
+    .wish-dot.active { background: var(--gold); box-shadow: 0 0 6px rgba(201,168,76,0.6); }
+
+    .wish-title {
+      font-family: var(--serif);
+      font-size: 1.3rem; font-weight: 400;
+      color: var(--offwhite); line-height: 1.3;
+    }
+    .wish-mood {
+      font-size: 0.8rem; color: var(--grey);
+      line-height: 1.7; margin-top: 0.45rem;
+    }
+    .wish-arrow {
+      color: var(--gold); opacity: 0; align-self: center;
+      transition: opacity 300ms, transform 300ms;
+    }
+    .wish-item:hover .wish-arrow { opacity: 1; transform: translateX(5px); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left {
+      opacity: 0; transform: translateX(-28px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+    /* ── FOOTER ── */
+    .footer-logo {
+      font-family: var(--serif);
+      font-size: 1.6rem; color: var(--gold);
+      letter-spacing: 0.08em;
+    }
+    .social-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 38px; height: 38px;
+      border: 1px solid rgba(240, 235, 224, 0.14);
+      color: rgba(240, 235, 224, 0.45);
+      cursor: pointer;
+      transition: border-color 300ms, color 300ms, transform 300ms;
+    }
+    .social-btn:hover {
+      border-color: var(--gold); color: var(--gold);
+      transform: translateY(-3px);
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.022; pointer-events: none; z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════
+       NAVBAR
+  ═══════════════════════════════ -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 px-6 lg:px-14 py-5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+
+      <a href="#" style="font-family:var(--serif); font-size:1.25rem; letter-spacing:0.12em; color:var(--offwhite); text-decoration:none; transition:color 300ms;">
+        W<span style="color:var(--gold);">.</span>
+      </a>
+
+      <ul class="hidden md:flex items-center gap-10 list-none">
+        <li><a href="#destinations" class="nav-link">Destinations</a></li>
+        <li><a href="#quote"        class="nav-link">Moments</a></li>
+        <li><a href="#wishlist"     class="nav-link">Wish List</a></li>
+      </ul>
+
+      <a href="#destinations" class="btn-primary hidden md:inline-flex" style="padding:0.6rem 1.5rem;">
+        Explore
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+      </a>
+
+      <button class="md:hidden" aria-label="Menu" style="color:var(--offwhite); background:none; border:none; cursor:pointer;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+
+  <!-- ═══════════════════════════════
+       HERO
+  ═══════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-vignette"></div>
+
+    <!-- floating gold particles -->
+    <div id="particles" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">A personal travel journal</p>
+
+      <h1 class="hero-title">
+        <span class="hero-title-line">Wander</span>
+        <span class="hero-title-line">lust</span>
+      </h1>
+
+      <div class="hero-divider"></div>
+
+      <p class="hero-subtitle">
+        Every corner of the world holds a story waiting to be lived.<br>
+        These are the places that call to me.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="#destinations" class="btn-primary">
+          Explore Destinations
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </a>
+        <a href="#wishlist" class="btn-ghost">View Wish List</a>
+      </div>
+    </div>
+
+    <div class="scroll-indicator" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})" role="button" aria-label="Scroll down">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       STATS COUNTER STRIP
+  ═══════════════════════════════ -->
+  <section id="stats" class="stats-strip">
+    <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4">
+      <div class="stat-item reveal">
+        <div class="stat-number" data-target="24">0</div>
+        <div class="stat-label">Countries Visited</div>
+      </div>
+      <div class="stat-item reveal" style="transition-delay:100ms">
+        <div class="stat-number" data-target="47">0</div>
+        <div class="stat-label">Cities Explored</div>
+      </div>
+      <div class="stat-item reveal" style="transition-delay:200ms">
+        <div class="stat-number" data-target="6">0</div>
+        <div class="stat-label">Dream Destinations</div>
+      </div>
+      <div class="stat-item reveal" style="transition-delay:300ms">
+        <div class="stat-number" data-target="12">0</div>
+        <div class="stat-label">Years Wandering</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       DESTINATIONS GRID
+  ═══════════════════════════════ -->
+  <section id="destinations" class="py-24 lg:py-36 px-6 lg:px-14">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="text-center mb-16 reveal">
+        <p class="section-eyebrow">Places I Dream Of</p>
+        <h2 class="section-title" style="margin-top:0.75rem;">Dream Destinations</h2>
+        <div class="gold-rule"></div>
+        <p style="color:var(--grey); font-size:0.85rem; max-width:400px; margin:1.25rem auto 0; line-height:1.8;">
+          Six corners of the world I intend to stand in before I'm done.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <!-- Kyoto -->
+        <div class="dest-card reveal" style="transition-delay:60ms">
+          <img class="dest-img" loading="lazy"
+               src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80&auto=format&fit=crop"
+               alt="Cherry blossom temple in Kyoto, Japan">
+          <div class="dest-overlay"></div>
+          <div class="dest-info">
+            <span class="dest-tag">Japan</span>
+            <div class="dest-name">Kyoto</div>
+            <p class="dest-desc">Ancient temples veiled in cherry blossom snow. A world where time slows to a reverent hush.</p>
+          </div>
+          <div class="dest-gold-bar"></div>
+        </div>
+
+        <!-- Santorini -->
+        <div class="dest-card reveal" style="transition-delay:160ms">
+          <img class="dest-img" loading="lazy"
+               src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&q=80&auto=format&fit=crop"
+               alt="Blue domed churches on the cliffs of Santorini, Greece">
+          <div class="dest-overlay"></div>
+          <div class="dest-info">
+            <span class="dest-tag">Greece</span>
+            <div class="dest-name">Santorini</div>
+            <p class="dest-desc">Clifftop villages of blinding white and Aegean blue, where sunsets become mythology.</p>
+          </div>
+          <div class="dest-gold-bar"></div>
+        </div>
+
+        <!-- Morocco -->
+        <div class="dest-card reveal" style="transition-delay:260ms">
+          <img class="dest-img" loading="lazy"
+               src="https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80&auto=format&fit=crop"
+               alt="Colorful medina streets of Marrakech, Morocco">
+          <div class="dest-overlay"></div>
+          <div class="dest-info">
+            <span class="dest-tag">Morocco</span>
+            <div class="dest-name">Marrakech</div>
+            <p class="dest-desc">Labyrinthine medinas alive with spice, sound, and color — a sensory pilgrimage unlike any other.</p>
+          </div>
+          <div class="dest-gold-bar"></div>
+        </div>
+
+        <!-- Iceland -->
+        <div class="dest-card reveal" style="transition-delay:360ms">
+          <img class="dest-img" loading="lazy"
+               src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&q=80&auto=format&fit=crop"
+               alt="Northern lights over an Icelandic landscape">
+          <div class="dest-overlay"></div>
+          <div class="dest-info">
+            <span class="dest-tag">Iceland</span>
+            <div class="dest-name">Reykjavik</div>
+            <p class="dest-desc">Where fire and ice wage an eternal, breathtaking war beneath curtains of emerald light.</p>
+          </div>
+          <div class="dest-gold-bar"></div>
+        </div>
+
+        <!-- Patagonia -->
+        <div class="dest-card reveal" style="transition-delay:460ms">
+          <img class="dest-img" loading="lazy"
+               src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80&auto=format&fit=crop"
+               alt="Dramatic granite peaks of Patagonia">
+          <div class="dest-overlay"></div>
+          <div class="dest-info">
+            <span class="dest-tag">Argentina · Chile</span>
+            <div class="dest-name">Patagonia</div>
+            <p class="dest-desc">The end of the earth — glaciers, granite spires, and silence so complete it rewrites you.</p>
+          </div>
+          <div class="dest-gold-bar"></div>
+        </div>
+
+        <!-- Maldives -->
+        <div class="dest-card reveal" style="transition-delay:560ms">
+          <img class="dest-img" loading="lazy"
+               src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=800&q=80&auto=format&fit=crop"
+               alt="Turquoise water and overwater bungalows in the Maldives">
+          <div class="dest-overlay"></div>
+          <div class="dest-info">
+            <span class="dest-tag">Maldives</span>
+            <div class="dest-name">Malé Atoll</div>
+            <p class="dest-desc">A necklace of islands in an impossible shade of turquoise — stillness perfected by nature.</p>
+          </div>
+          <div class="dest-gold-bar"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       QUOTE / PARALLAX SECTION
+  ═══════════════════════════════ -->
+  <section id="quote" class="quote-section py-40 px-6">
+    <div class="quote-bg"></div>
+    <div class="quote-overlay"></div>
+    <div class="relative z-10 max-w-3xl mx-auto text-center reveal">
+      <span class="quote-mark" aria-hidden="true">"</span>
+      <blockquote>
+        Not all those who wander are lost — some are simply finding themselves in the spaces between maps.
+      </blockquote>
+      <div class="gold-rule" style="margin-top:2rem;"></div>
+      <p style="margin-top:1rem; font-size:0.65rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--grey);">
+        — A traveller's philosophy
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       WISH LIST
+  ═══════════════════════════════ -->
+  <section id="wishlist" style="background:var(--surface); padding:6rem 1.5rem;">
+    <div style="max-width:860px; margin:0 auto;">
+
+      <div class="text-center mb-16 reveal">
+        <p class="section-eyebrow">The List</p>
+        <h2 class="section-title" style="margin-top:0.75rem;">Bucket List</h2>
+        <div class="gold-rule"></div>
+        <p style="color:var(--grey); font-size:0.85rem; max-width:380px; margin:1.25rem auto 0; line-height:1.8;">
+          Not merely trips — pilgrimages. Each one a promise to myself.
+        </p>
+      </div>
+
+      <!-- Wish Items -->
+      <div class="wish-item reveal">
+        <div class="wish-num">01</div>
+        <div class="wish-body">
+          <div class="wish-status">
+            <span class="wish-dot active"></span>Dreaming
+          </div>
+          <div class="wish-title">See the Northern Lights in Iceland</div>
+          <p class="wish-mood">To stand beneath an aurora and feel completely, gloriously small.</p>
+        </div>
+        <div class="wish-arrow" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div class="wish-item reveal" style="transition-delay:80ms">
+        <div class="wish-num">02</div>
+        <div class="wish-body">
+          <div class="wish-status">
+            <span class="wish-dot active"></span>Dreaming
+          </div>
+          <div class="wish-title">Trek Machu Picchu at Sunrise</div>
+          <p class="wish-mood">Watch the clouds burn off the ancient stones as the Inca world comes alive at dawn.</p>
+        </div>
+        <div class="wish-arrow" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div class="wish-item reveal" style="transition-delay:160ms">
+        <div class="wish-num">03</div>
+        <div class="wish-body">
+          <div class="wish-status">
+            <span class="wish-dot"></span>Planning
+          </div>
+          <div class="wish-title">Sail the Greek Islands</div>
+          <p class="wish-mood">Island-hop the Cyclades under a bone-white sail with nothing but wind and blue water.</p>
+        </div>
+        <div class="wish-arrow" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div class="wish-item reveal" style="transition-delay:240ms">
+        <div class="wish-num">04</div>
+        <div class="wish-body">
+          <div class="wish-status">
+            <span class="wish-dot active"></span>Dreaming
+          </div>
+          <div class="wish-title">Safari in the Serengeti</div>
+          <p class="wish-mood">Witness the great migration — a river of life older than memory, crossing the golden plains.</p>
+        </div>
+        <div class="wish-arrow" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div class="wish-item reveal" style="transition-delay:320ms">
+        <div class="wish-num">05</div>
+        <div class="wish-body">
+          <div class="wish-status">
+            <span class="wish-dot"></span>Planning
+          </div>
+          <div class="wish-title">Walk the Camino de Santiago</div>
+          <p class="wish-mood">800 kilometres of pilgrimage across Spain — not for the destination, but the undoing.</p>
+        </div>
+        <div class="wish-arrow" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div class="wish-item reveal" style="transition-delay:400ms">
+        <div class="wish-num">06</div>
+        <div class="wish-body">
+          <div class="wish-status">
+            <span class="wish-dot active"></span>Dreaming
+          </div>
+          <div class="wish-title">Temple-hop Kyoto in Cherry Blossom Season</div>
+          <p class="wish-mood">Seven slow days in spring Kyoto, moving between moss, stone, and falling pink petals.</p>
+        </div>
+        <div class="wish-arrow" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       FOOTER
+  ═══════════════════════════════ -->
+  <footer style="background:var(--black); border-top:1px solid rgba(201,168,76,0.12); padding:5rem 1.5rem 2.5rem;">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-14">
+
+        <div class="reveal-left">
+          <div class="footer-logo mb-4">Wanderlust</div>
+          <p style="color:var(--grey); font-size:0.82rem; line-height:1.85; max-width:240px;">
+            A personal atlas of places dreamed, planned, and lived. The world is too beautiful to stay still.
+          </p>
+        </div>
+
+        <div class="reveal" style="transition-delay:80ms">
+          <h4 style="font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:1.25rem;">Navigate</h4>
+          <ul style="list-style:none; display:flex; flex-direction:column; gap:0.9rem;">
+            <li><a href="#destinations" style="font-size:0.82rem; color:var(--grey); text-decoration:none; transition:color 300ms;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--grey)'">Destinations</a></li>
+            <li><a href="#quote"        style="font-size:0.82rem; color:var(--grey); text-decoration:none; transition:color 300ms;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--grey)'">Moments</a></li>
+            <li><a href="#wishlist"     style="font-size:0.82rem; color:var(--grey); text-decoration:none; transition:color 300ms;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--grey)'">Wish List</a></li>
+            <li><a href="#stats"        style="font-size:0.82rem; color:var(--grey); text-decoration:none; transition:color 300ms;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--grey)'">My Journey</a></li>
+          </ul>
+        </div>
+
+        <div class="reveal" style="transition-delay:160ms">
+          <h4 style="font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:1.25rem;">Follow the Journey</h4>
+          <div style="display:flex; gap:0.6rem;">
+            <a href="#" class="social-btn" aria-label="Instagram">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </a>
+            <a href="#" class="social-btn" aria-label="X / Twitter">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            <a href="#" class="social-btn" aria-label="Pinterest">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.236 2.636 7.855 6.356 9.312-.088-.791-.167-2.005.035-2.868.181-.78 1.172-4.97 1.172-4.97s-.299-.598-.299-1.482c0-1.388.806-2.428 1.808-2.428.852 0 1.265.64 1.265 1.408 0 .858-.546 2.14-.828 3.33-.236.995.499 1.806 1.476 1.806 1.772 0 3.136-1.867 3.136-4.562 0-2.387-1.715-4.054-4.163-4.054-2.836 0-4.5 2.126-4.5 4.323 0 .856.33 1.773.741 2.274a.3.3 0 0 1 .069.286c-.075.313-.243 1.001-.277 1.14-.044.183-.146.222-.337.134-1.249-.581-2.03-2.407-2.03-3.874 0-3.154 2.292-6.052 6.608-6.052 3.469 0 6.165 2.473 6.165 5.776 0 3.447-2.173 6.22-5.19 6.22-1.013 0-1.966-.527-2.292-1.148l-.623 2.378c-.226.869-.835 1.958-1.244 2.621.938.29 1.931.446 2.962.446 5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="padding-top:2rem; border-top:1px solid rgba(201,168,76,0.08); display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
+        <p style="font-size:0.68rem; color:rgba(138,142,168,0.45); letter-spacing:0.1em;">
+          © 2026 Wanderlust. All rights reserved.
+        </p>
+        <p style="font-size:0.68rem; color:rgba(138,142,168,0.28); letter-spacing:0.08em;">
+          Made with wandering in mind.
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════ -->
+  <script>
+    // ── Navbar scroll blur ──
+    const navbar = document.getElementById('navbar');
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      navbar.classList.toggle('scrolled', y > 50);
+      lastScroll = y;
+    }, { passive: true });
+
+    // ── IntersectionObserver — scroll reveal ──
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal, .reveal-left').forEach(el => revealObs.observe(el));
+
+    // ── Counter animation ──
+    const counterObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        const target = parseInt(el.dataset.target, 10);
+        const duration = 1900;
+        const startTime = performance.now();
+
+        const tick = (now) => {
+          const p = Math.min((now - startTime) / duration, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(eased * target);
+          if (p < 1) requestAnimationFrame(tick);
+          else el.textContent = target;
+        };
+        requestAnimationFrame(tick);
+        counterObs.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-target]').forEach(el => counterObs.observe(el));
+
+    // ── Hero gold particles ──
+    (function spawnParticles() {
+      const container = document.getElementById('particles');
+      if (!container) return;
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if (mediaQuery.matches) return;
+
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 2 + 1;
+        const left = Math.random() * 100;
+        const delay = Math.random() * 8;
+        const dur   = Math.random() * 10 + 8;
+        const drift = (Math.random() - 0.5) * 60;
+        p.style.cssText = `
+          left:${left}%; bottom:10%;
+          width:${size}px; height:${size}px;
+          --drift:${drift}px;
+          animation-duration:${dur}s;
+          animation-delay:${delay}s;
+          animation-name:particleFloat;
+        `;
+        container.appendChild(p);
+      }
+    })();
+  </script>
+
+</body>
+</html>
