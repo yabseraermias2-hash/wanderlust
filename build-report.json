@@ -56,7 +56,8 @@
     },
     "nano_banana_2": {
       "status": "failed",
-      "reason": "Insufficient account balance — images generated externally via AI and placed in images/"
+      "reason": "Insufficient account balance on inference.sh — fell back to Gemini AI image generation",
+      "fallback": "9 images generated via Google Gemini using prompts supplied by Claude, saved locally to images/ at 1536x1024px"
     }
   },
   "sections": [
