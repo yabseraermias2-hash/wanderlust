@@ -169,10 +169,8 @@
     img { background: var(--surface); }
     img[data-failed] { filter: opacity(0); }
 
-    /* ─── Smooth low-res upscaling ──────────────────────── */
-    .hero-bg { image-rendering: smooth; filter: blur(0.4px); transform: scale(1.08); }
-    .dest-img { image-rendering: smooth; }
-    .parallax-bg { background-size: cover; filter: brightness(0.85); }
+    /* ─── Image rendering ───────────────────────────────── */
+    .parallax-bg { background-size: cover; }
 
     /* ─── prefers-reduced-motion ────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
@@ -363,7 +361,8 @@
             <img
               src="images/marrakech.jpg"
               alt="Colourful spice market stalls and ornate architecture in the Medina of Marrakech Morocco"
-              class="dest-img w-full h-full object-cover object-center"
+              class="dest-img w-full h-full object-cover"
+              style="object-position: center 30%"
               loading="lazy"
             />
             <div class="dest-overlay">
