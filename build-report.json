@@ -1,0 +1,136 @@
+{
+  "build": {
+    "command": "/animated-website",
+    "brief": "brief.txt",
+    "completed": "2026-04-17",
+    "output": "index.html"
+  },
+  "site": {
+    "name": "Wanderlust",
+    "tagline": "The world is calling.",
+    "description": "A personal travel bucket list website showcasing dream destinations, visited places, and a wish list of future adventures. Every destination tells a story.",
+    "type": "Single-page animated travel journal",
+    "stack": "HTML / Tailwind CSS CDN / Vanilla JavaScript"
+  },
+  "design_system": {
+    "tool": "UI UX Pro Max",
+    "style": "Dark luxury, cinematic, editorial, atmospheric — National Geographic meets high-end travel journal",
+    "colors": {
+      "primary":     "#06070A",
+      "secondary":   "#0E1017",
+      "accent":      "#C9A84C",
+      "accent_light":"#E8C96A",
+      "surface":     "#151820",
+      "ink":         "#F0EBE0",
+      "muted":       "#8A8EA8"
+    },
+    "typography": {
+      "display": "Cormorant Garamond (Google Fonts)",
+      "body":    "DM Sans (Google Fonts)"
+    },
+    "motion": {
+      "easing":    "cubic-bezier(0.22, 1, 0.36, 1)",
+      "micro":     "150ms",
+      "standard":  "300ms",
+      "expressive":"600ms",
+      "hero":      "900ms"
+    }
+  },
+  "tools_used": {
+    "ui_ux_pro_max": {
+      "status": "used",
+      "purpose": "Generated design system — colors, typography, spacing, motion tokens"
+    },
+    "firecrawl": {
+      "status": "used",
+      "purpose": "Scraped nationalgeographic.com/travel for editorial layout reference",
+      "url": "https://www.nationalgeographic.com/travel"
+    },
+    "21st_dev_magic": {
+      "status": "skipped",
+      "reason": "Returned no usable component code — hero built manually"
+    },
+    "google_stitch": {
+      "status": "used",
+      "purpose": "Project created (ID: 5629113597675187401); sections built manually from brief"
+    },
+    "nano_banana_2": {
+      "status": "failed",
+      "reason": "Insufficient account balance — images generated externally via AI and placed in images/"
+    }
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "name": "Hero",
+      "description": "Full-viewport cinematic hero with Ken Burns zoom, staggered fade+rise text, gold CTA buttons, pulsing scroll indicator"
+    },
+    {
+      "id": "stats",
+      "name": "Stats Strip",
+      "description": "4 animated count-up counters: countries visited, cities, on my list, memories"
+    },
+    {
+      "id": "destinations",
+      "name": "Places I've Wandered",
+      "description": "3-column equal destination card grid — Kyoto, Santorini, Marrakech — with hover image scale and overlay description reveal"
+    },
+    {
+      "id": "quote",
+      "name": "Quote / My Story",
+      "description": "Full-bleed parallax section with cinematic italic blockquote and gold attribution"
+    },
+    {
+      "id": "wishlist",
+      "name": "My Bucket List",
+      "description": "6 numbered destination image cards in a 3-column grid — Hokkaido, Machu Picchu, Westfjords, Danakil, Antarctica, Tiger's Nest"
+    },
+    {
+      "id": "footer",
+      "name": "Footer",
+      "description": "Minimal dark footer with logo, nav links, SVG social icons"
+    }
+  ],
+  "animations": [
+    "Ken Burns slow zoom on hero background (12s ease-out)",
+    "Staggered fade+rise on hero elements (eyebrow 0.3s → title 0.5s → subtitle 0.7s → buttons 0.9s → scroll indicator 1.2s)",
+    "Pulsing scroll indicator line (2s infinite)",
+    "IntersectionObserver scroll reveal on all sections (threshold 0.12, translateY 30px → 0)",
+    "Count-up animation on stats (1800ms ease-out cubic)",
+    "Destination card image scale on hover (1.07)",
+    "Destination card description max-height reveal on hover",
+    "Parallax background on quote section (background-attachment: fixed, disabled on touch devices)",
+    "Navbar backdrop-blur fade-in after 80px scroll",
+    "Gold number opacity shift on wish list hover"
+  ],
+  "accessibility": [
+    "Landmark regions: header, nav, main, footer",
+    "Alt text on every image",
+    "aria-label on all icon buttons and interactive elements",
+    "Minimum 44x44px tap targets on mobile",
+    "prefers-reduced-motion: collapses all transforms to 200ms opacity only",
+    "Escape key closes mobile menu",
+    "tabindex=0 on destination cards for keyboard navigation",
+    "role=dialog on mobile menu overlay"
+  ],
+  "responsive": {
+    "breakpoints": ["640px (sm)", "768px (md)", "1024px (lg)", "1280px (xl)"],
+    "approach": "Mobile-first"
+  },
+  "images": {
+    "hero":       "images/hero.jpg",
+    "kyoto":      "images/kyoto.jpg",
+    "santorini":  "images/santorini.jpg",
+    "marrakech":  "images/marrakech.jpg",
+    "hokkaido":   "images/hokkaido.jpg",
+    "danakil":    "images/danakil.jpg",
+    "antarctica": "images/antarctica.jpg",
+    "tigers_nest":"images/tigers-nest.jpg",
+    "quote_bg":   "images/quote-bg.jpg"
+  },
+  "seo": {
+    "title": "Wanderlust — The world is calling.",
+    "description": "A curated list of dream destinations, places visited, and adventures still to come. Every destination, a story.",
+    "og_tags": ["og:title", "og:description", "og:image", "og:type"]
+  }
+}
