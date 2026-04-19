@@ -56,18 +56,39 @@
     ::selection { background: rgba(201,168,76,.28); color: var(--ink); }
 
     /* ─── Keyframes ─────────────────────────────────────── */
-    @keyframes kenBurns    { to { transform: scale(1.08); } }
+    @keyframes kenBurns    { to { transform: scale(1.12); } }
     @keyframes fadeRise    { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
     @keyframes scrollPulse { 0%,100%{opacity:.35;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.18)} }
+    @keyframes lightRay    { 0%,100%{opacity:0;transform:translateX(-60px) rotate(20deg)} 50%{opacity:.06;transform:translateX(60px) rotate(20deg)} }
+    @keyframes lightRay2   { 0%,100%{opacity:0;transform:translateX(40px) rotate(-15deg)} 50%{opacity:.04;transform:translateX(-40px) rotate(-15deg)} }
+    @keyframes floatTitle  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
 
     /* ─── Hero ──────────────────────────────────────────── */
-    .hero-bg  { animation: kenBurns 12s ease-out forwards; }
+    .hero-bg  { animation: kenBurns 14s ease-out forwards; will-change: transform; }
     .h-eye    { animation: fadeRise 900ms var(--ease) 0.30s both; }
     .h-title  { animation: fadeRise 900ms var(--ease) 0.50s both; }
     .h-sub    { animation: fadeRise 900ms var(--ease) 0.70s both; }
     .h-btns   { animation: fadeRise 900ms var(--ease) 0.90s both; }
     .h-scroll { animation: fadeRise 900ms var(--ease) 1.20s both; }
     .scroll-line { animation: scrollPulse 2s ease-in-out infinite; }
+
+    /* hero title gentle float after load */
+    .h-title.loaded { animation: fadeRise 900ms var(--ease) 0.50s both, floatTitle 6s ease-in-out 1.5s infinite; }
+
+    /* light ray overlays */
+    .hero-ray-1 {
+      position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(105deg, transparent 30%, rgba(201,168,76,.08) 50%, transparent 70%);
+      animation: lightRay 8s ease-in-out infinite;
+    }
+    .hero-ray-2 {
+      position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(75deg, transparent 20%, rgba(240,235,224,.04) 45%, transparent 65%);
+      animation: lightRay2 11s ease-in-out 3s infinite;
+    }
+
+    /* parallax wrapper — moves on mousemove via JS */
+    #hero-parallax { transition: transform 120ms linear; will-change: transform; }
 
     /* ─── Scroll Reveal ─────────────────────────────────── */
     .reveal {
@@ -229,17 +250,22 @@
     ════════════════════════════════════════════════════ -->
     <header id="hero" class="relative h-screen min-h-[640px] overflow-hidden flex flex-col items-center justify-center" role="banner">
 
-      <!-- Ken Burns background -->
+      <!-- Ken Burns + mouse parallax background -->
       <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <img
-          src="images/hero.jpg"
-          alt="Dramatic snow-capped mountain range at golden hour with deep orange and purple sky"
-          class="hero-bg w-full h-full object-cover object-center"
-          loading="eager"
-          fetchpriority="high"
-        />
-        <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(6,7,10,.55) 0%, rgba(6,7,10,.18) 40%, rgba(6,7,10,.82) 100%)"></div>
-        <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(6,7,10,.35) 0%, transparent 50%, rgba(6,7,10,.2) 100%)"></div>
+        <div id="hero-parallax" class="absolute inset-0" style="inset:-4%">
+          <img
+            src="images/hero.jpg"
+            alt="Dramatic snow-capped mountain range at golden hour with deep orange and purple sky"
+            class="hero-bg w-full h-full object-cover object-center"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+        <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(6,7,10,.5) 0%, rgba(6,7,10,.12) 38%, rgba(6,7,10,.85) 100%)"></div>
+        <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(6,7,10,.3) 0%, transparent 50%, rgba(6,7,10,.18) 100%)"></div>
+        <!-- Animated light rays -->
+        <div class="hero-ray-1"></div>
+        <div class="hero-ray-2"></div>
       </div>
 
       <!-- Content -->
@@ -628,6 +654,30 @@
       });
     }, { threshold: 0.6 });
     document.querySelectorAll('[data-target]').forEach(el => countObs.observe(el));
+
+    // ── Hero mouse parallax ───────────────────────────────
+    const heroParallax = document.getElementById('hero-parallax');
+    const heroSection  = document.getElementById('hero');
+    const heroTitle    = document.querySelector('.h-title');
+
+    // Trigger float animation after fade-in completes
+    setTimeout(() => heroTitle && heroTitle.classList.add('loaded'), 1600);
+
+    let ticking = false;
+    heroSection.addEventListener('mousemove', (e) => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const { left, top, width, height } = heroSection.getBoundingClientRect();
+        const x = ((e.clientX - left) / width  - 0.5) * 18; // max ±9px
+        const y = ((e.clientY - top)  / height - 0.5) * 12; // max ±6px
+        heroParallax.style.transform = `translate(${x}px, ${y}px)`;
+        ticking = false;
+      });
+    });
+    heroSection.addEventListener('mouseleave', () => {
+      heroParallax.style.transform = 'translate(0,0)';
+    });
 
     // ── Image error fallback ─────────────────────────────
     document.querySelectorAll('img').forEach(img => {
