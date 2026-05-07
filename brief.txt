@@ -1,0 +1,26 @@
+Project Brief: Wanderlust
+
+Build a modern travel/wanderlust website with a clean, cinematic, and responsive design.
+
+Goal:
+Create a visually appealing landing page that inspires users to explore destinations, travel experiences, and adventure ideas.
+
+Main Requirements:
+- Use HTML, CSS, and JavaScript.
+- Website must be responsive on desktop and mobile.
+- Include smooth animations and modern UI styling.
+- Use high-quality travel images from the images folder.
+- Include sections such as hero, destinations, features, gallery, and footer.
+- Keep the design clean, professional, and easy to navigate.
+
+Style:
+- Travel/adventure theme
+- Modern layout
+- Smooth scrolling
+- Clean typography
+- Strong visual hero section
+- Cards for destinations or features
+
+Final Output:
+The website should run from index.html and look like a polished travel landing page.
+Add brief.txt
